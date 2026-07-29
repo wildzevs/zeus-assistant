@@ -2,8 +2,9 @@ from telegram import ReplyKeyboardMarkup
 
 weather_menu = ReplyKeyboardMarkup(
     [
+        ["☀ Сейчас"],
         ["📅 Сегодня", "🗓 Неделя"],
-        ["📍 Сменить город"],
+        ["📍 Изменить город"],
         ["⬅ Назад"],
     ],
     resize_keyboard=True,

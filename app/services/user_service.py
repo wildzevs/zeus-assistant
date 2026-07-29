@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.database.session import SessionLocal
 from app.models.user import User
@@ -48,3 +48,27 @@ class UserService:
             telegram_id,
             first_name,
         )
+
+    @staticmethod
+    async def update_city(
+        telegram_id: int,
+        city: str,
+        latitude: float,
+        longitude: float,
+        timezone: str,
+    ) -> None:
+
+        async with SessionLocal() as session:
+
+            await session.execute(
+                update(User)
+                .where(User.telegram_id == telegram_id)
+                .values(
+                    city=city,
+                    latitude=latitude,
+                    longitude=longitude,
+                    timezone=timezone,
+                )
+            )
+
+            await session.commit()

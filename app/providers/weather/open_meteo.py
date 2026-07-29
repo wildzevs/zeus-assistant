@@ -26,6 +26,7 @@ async def get_coordinates(city: str):
         "name": place["name"],
         "latitude": place["latitude"],
         "longitude": place["longitude"],
+        "timezone": place.get("timezone", "Europe/Moscow"),
     }
 
 
