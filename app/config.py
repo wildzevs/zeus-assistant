@@ -11,8 +11,6 @@ class Settings(BaseSettings):
 
     weather_provider: str = "openweather"
 
-    translate_provider: str = "argos"
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
