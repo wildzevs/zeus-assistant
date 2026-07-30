@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.database.session import SessionLocal
 from app.models.parcel import Parcel
@@ -50,9 +50,48 @@ class ParcelService:
             user = result.scalar_one()
 
             result = await session.execute(
-                select(Parcel).where(
-                    Parcel.user_id == user.id
-                )
+                select(Parcel)
+                .where(Parcel.user_id == user.id)
+                .order_by(Parcel.id)
             )
 
             return result.scalars().all()
+
+    @staticmethod
+    async def delete_parcel(
+        telegram_id: int,
+        index: int,
+    ) -> bool:
+
+        async with SessionLocal() as session:
+
+            result = await session.execute(
+                select(User).where(
+                    User.telegram_id == telegram_id
+                )
+            )
+
+            user = result.scalar_one()
+
+            result = await session.execute(
+                select(Parcel)
+                .where(Parcel.user_id == user.id)
+                .order_by(Parcel.id)
+            )
+
+            parcels = result.scalars().all()
+
+            if index < 1 or index > len(parcels):
+                return False
+
+            parcel = parcels[index - 1]
+
+            await session.execute(
+                delete(Parcel).where(
+                    Parcel.id == parcel.id
+                )
+            )
+
+            await session.commit()
+
+            return True
