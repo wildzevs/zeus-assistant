@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Float, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
 
@@ -9,7 +9,10 @@ from app.database.base import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
 
     telegram_id: Mapped[int] = mapped_column(
         Integer,
@@ -50,12 +53,6 @@ class User(Base):
     daily_time: Mapped[str] = mapped_column(
         String(5),
         default="07:00",
-    )
-
-    parcels = relationship(
-        "Parcel",
-        back_populates="user",
-        cascade="all, delete-orphan",
     )
 
     created_at: Mapped[datetime] = mapped_column(

@@ -1,6 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from app.handlers.current_weather import current_weather
+from app.keyboards.weather_menu import weather_menu
 from app.providers.weather.open_meteo import get_coordinates
 from app.services.user_service import UserService
 
@@ -15,11 +17,22 @@ async def set_city_handler(
     location = await get_coordinates(city)
 
     if not location:
+
+        context.user_data["waiting_city"] = True
+
         await update.message.reply_text(
-            "❌ Город не найден.\n"
-            "Попробуйте ввести название еще раз."
+            "❌ <b>Город не найден.</b>\n\n"
+            "Попробуйте ещё раз.\n\n"
+            "Например:\n"
+            "Москва\n"
+            "Санкт-Петербург\n"
+            "Ростов-на-Дону",
+            parse_mode="HTML",
+            reply_markup=weather_menu,
         )
         return
+
+    context.user_data["waiting_city"] = False
 
     await UserService.update_city(
         telegram_id=update.effective_user.id,
@@ -30,6 +43,10 @@ async def set_city_handler(
     )
 
     await update.message.reply_text(
-        f"✅ Город изменен на: {location['name']}\n\n"
-        "Теперь нажмите ☀ Сейчас."
+        f"✅ <b>Город изменён:</b> {location['name']}\n\n"
+        "🌤 Загружаю текущую погоду...",
+        parse_mode="HTML",
+        reply_markup=weather_menu,
     )
+
+    await current_weather(update, context)

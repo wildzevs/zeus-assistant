@@ -21,9 +21,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Добро пожаловать, <b>{telegram_user.first_name}</b>!\n\n"
         "━━━━━━━━━━━━━━━━━━\n"
         f"📍 Город: <b>{city}</b>\n"
-        "🌤 Погода: —\n"
-        "💵 USD: —\n"
-        "📦 Посылки: —\n"
+        "🌤 Погода\n"
+        "💱 Валюты\n"
+        "📏 Конвертер\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
         "Выберите раздел:"
     )
