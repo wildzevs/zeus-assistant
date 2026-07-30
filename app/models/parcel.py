@@ -21,28 +21,37 @@ class Parcel(Base):
 
     track_number: Mapped[str] = mapped_column(
         String(100),
-        unique=True,
         index=True,
     )
 
     title: Mapped[str] = mapped_column(
-        String(100),
-        default="Посылка",
+        String(150),
+        default="",
     )
 
     carrier: Mapped[str] = mapped_column(
         String(100),
-        default="Не определён",
+        default="",
     )
 
     status: Mapped[str] = mapped_column(
         String(200),
-        default="Добавлена",
+        default="Ожидает проверки",
+    )
+
+    status_code: Mapped[str] = mapped_column(
+        String(50),
+        default="pending",
     )
 
     last_location: Mapped[str] = mapped_column(
         String(200),
-        default="-",
+        default="",
+    )
+
+    last_checked: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
     )
 
     updated_at: Mapped[datetime] = mapped_column(

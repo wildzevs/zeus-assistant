@@ -18,12 +18,15 @@ from app.handlers.currency import currency
 from app.handlers.current_weather import current_weather
 from app.handlers.district_weather import district_weather
 from app.handlers.error_handler import error_handler
+from app.handlers.parcel import parcel
 from app.handlers.set_city import set_city_handler
 from app.handlers.start import start
 from app.handlers.today_weather import today_weather
 from app.handlers.tools import tools
-from app.handlers.week_weather import week_weather
 from app.handlers.weather import change_city, weather
+from app.handlers.week_weather import week_weather
+
+from app.services.parcel_service import ParcelService
 
 
 logging.basicConfig(
@@ -46,6 +49,20 @@ async def city_router(
 
     if context.user_data.get("waiting_converter"):
         await converter(update, context)
+        return
+
+    if context.user_data.get("waiting_track"):
+
+        context.user_data["waiting_track"] = False
+
+        await ParcelService.add_parcel(
+            telegram_id=update.effective_user.id,
+            track_number=update.message.text.strip().upper(),
+        )
+
+        await update.message.reply_text(
+            "✅ Посылка успешно сохранена."
+        )
         return
 
     if update.message and update.message.text == "📏 Конвертер":
@@ -87,6 +104,27 @@ def main():
         MessageHandler(
             filters.Regex("^🛠 Инструменты$"),
             tools,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^📦 Посылки$"),
+            parcel,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^➕ Добавить посылку$"),
+            parcel,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^📋 Мои посылки$"),
+            parcel,
         )
     )
 
