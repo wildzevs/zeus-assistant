@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Float, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
@@ -50,6 +50,12 @@ class User(Base):
     daily_time: Mapped[str] = mapped_column(
         String(5),
         default="07:00",
+    )
+
+    parcels = relationship(
+        "Parcel",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     created_at: Mapped[datetime] = mapped_column(

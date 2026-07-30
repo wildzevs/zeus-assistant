@@ -1,8 +1,8 @@
 from app.database.base import Base
 from app.database.session import engine
 
-# импортируем модели, чтобы SQLAlchemy их увидела
-from app.models.user import User  # noqa: F401
+from app.models.parcel import Parcel  # noqa
+from app.models.user import User  # noqa
 
 
 async def init_db():
