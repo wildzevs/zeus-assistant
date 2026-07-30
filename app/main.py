@@ -22,6 +22,7 @@ from app.handlers.set_city import set_city_handler
 from app.handlers.start import start
 from app.handlers.today_weather import today_weather
 from app.handlers.tools import tools
+from app.handlers.unit_converter import unit_converter
 from app.handlers.weather import change_city, weather
 from app.handlers.week_weather import week_weather
 
@@ -45,10 +46,6 @@ async def city_router(
         return
 
     if context.user_data.get("waiting_converter"):
-        await converter(update, context)
-        return
-
-    if update.message and update.message.text == "📏 Конвертер":
         await converter(update, context)
         return
 
@@ -92,6 +89,55 @@ def main():
 
     application.add_handler(
         MessageHandler(
+            filters.Regex("^📏 Конвертер$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^🌡 Температура$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^📏 Длина$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^⚖ Вес$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^🧴 Объём$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^🚗 Скорость$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^⏱ Время$"),
+            unit_converter,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
             filters.Regex("^☀ Сейчас$"),
             current_weather,
         )
@@ -127,8 +173,15 @@ def main():
 
     application.add_handler(
         MessageHandler(
-            filters.Regex("^💰 Валюты$"),
+            filters.Regex("^💱 Валюты$"),
             currency,
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.Regex("^💱 Конвертер$"),
+            converter,
         )
     )
 
