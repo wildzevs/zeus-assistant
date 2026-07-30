@@ -5,22 +5,31 @@ from app.keyboards.main_menu import main_menu
 from app.services.user_service import UserService
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user = update.effective_user
+    telegram_user = update.effective_user
 
-    await UserService.get_or_create(
-        telegram_id=user.id,
-        first_name=user.first_name,
+    user = await UserService.get_or_create(
+        telegram_id=telegram_user.id,
+        first_name=telegram_user.first_name,
+    )
+
+    city = user.city if user.city else "не выбран"
+
+    text = (
+        "⚡ <b>ZEUS ASSISTANT</b>\n\n"
+        f"Добро пожаловать, <b>{telegram_user.first_name}</b>!\n\n"
+        "━━━━━━━━━━━━━━━━━━\n"
+        f"📍 Город: <b>{city}</b>\n"
+        "🌤 Погода: —\n"
+        "💵 USD: —\n"
+        "📦 Посылки: —\n"
+        "━━━━━━━━━━━━━━━━━━\n\n"
+        "Выберите раздел:"
     )
 
     await update.message.reply_text(
-        f"👋 Привет, {user.first_name}!\n\n"
-        "Я Zeus Assistant.\n"
-        "Пока я умею немного, но скоро научусь:\n\n"
-        "🌤 Показывать погоду\n"
-        "💰 Показывать курсы валют\n"
-        "📦 Отслеживать посылки\n\n"
-        "Выбери действие:",
+        text,
         reply_markup=main_menu,
+        parse_mode="HTML",
     )

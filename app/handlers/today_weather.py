@@ -1,15 +1,11 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
-
 from telegram import Update
 from telegram.ext import ContextTypes
 
 from app.providers.weather.open_meteo import get_current_weather
 from app.services.user_service import UserService
-from app.utils.weather_codes import get_weather_description
 
 
-async def current_weather(
+async def today_weather(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE,
 ):
@@ -25,6 +21,15 @@ async def current_weather(
         )
         return
 
+    if (
+        user.latitude is None
+        or user.longitude is None
+    ):
+        await update.message.reply_text(
+            "📍 Сначала выберите город."
+        )
+        return
+
     weather = await get_current_weather(
         user.latitude,
         user.longitude,
@@ -33,27 +38,22 @@ async def current_weather(
     current = weather["current"]
     daily = weather["daily"]
 
-    city_time = datetime.now(
-        ZoneInfo(user.timezone)
-    ).strftime("%H:%M")
-
-    description = get_weather_description(
-        current["weather_code"]
-    )
-
     sunrise = daily["sunrise"][0][11:16]
     sunset = daily["sunset"][0][11:16]
 
-    await update.message.reply_text(
-        f"🌤 <b>Сейчас</b>\n\n"
-        f"📍 <b>{user.city}</b>\n"
-        f"🕒 {city_time}\n\n"
-        f"{description}\n\n"
-        f"🌡 <b>{current['temperature_2m']:.1f}°C</b>\n"
-        f"🤚 Ощущается: {current['apparent_temperature']:.1f}°C\n"
-        f"💧 Влажность: {current['relative_humidity_2m']}%\n"
-        f"💨 Ветер: {current['wind_speed_10m']:.1f} м/с\n\n"
+    text = (
+        f"📍 <b>{user.city}</b>\n\n"
+        f"📅 <b>Сегодня</b>\n\n"
+        f"🌡 Сейчас: <b>{current['temperature_2m']}°C</b>\n"
+        f"⬆ Максимум: {daily['temperature_2m_max'][0]}°C\n"
+        f"⬇ Минимум: {daily['temperature_2m_min'][0]}°C\n\n"
+        f"🌧 Осадки: {daily['precipitation_probability_max'][0]}%\n"
+        f"💨 Ветер: {current['wind_speed_10m']} м/с\n\n"
         f"🌅 Восход: {sunrise}\n"
-        f"🌇 Закат: {sunset}",
+        f"🌇 Закат: {sunset}"
+    )
+
+    await update.message.reply_text(
+        text,
         parse_mode="HTML",
     )

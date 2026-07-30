@@ -1,12 +1,15 @@
 import httpx
 
 
+GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
+FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
+
+
 async def get_coordinates(city: str):
-    url = "https://geocoding-api.open-meteo.com/v1/search"
 
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(
-            url,
+            GEOCODING_URL,
             params={
                 "name": city,
                 "count": 1,
@@ -14,6 +17,8 @@ async def get_coordinates(city: str):
                 "format": "json",
             },
         )
+
+    response.raise_for_status()
 
     data = response.json()
 
@@ -31,11 +36,10 @@ async def get_coordinates(city: str):
 
 
 async def get_current_weather(latitude: float, longitude: float):
-    url = "https://api.open-meteo.com/v1/forecast"
 
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(
-            url,
+            FORECAST_URL,
             params={
                 "latitude": latitude,
                 "longitude": longitude,
@@ -48,6 +52,9 @@ async def get_current_weather(latitude: float, longitude: float):
                     "weather_code",
                 ],
                 "daily": [
+                    "temperature_2m_max",
+                    "temperature_2m_min",
+                    "precipitation_probability_max",
                     "sunrise",
                     "sunset",
                 ],
@@ -55,5 +62,31 @@ async def get_current_weather(latitude: float, longitude: float):
                 "wind_speed_unit": "ms",
             },
         )
+
+    response.raise_for_status()
+
+    return response.json()
+
+
+async def get_week_weather(latitude: float, longitude: float):
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        response = await client.get(
+            FORECAST_URL,
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "timezone": "auto",
+                "daily": [
+                    "weather_code",
+                    "temperature_2m_max",
+                    "temperature_2m_min",
+                    "precipitation_probability_max",
+                ],
+                "forecast_days": 7,
+            },
+        )
+
+    response.raise_for_status()
 
     return response.json()

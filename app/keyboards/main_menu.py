@@ -2,7 +2,8 @@ from telegram import ReplyKeyboardMarkup
 
 main_menu = ReplyKeyboardMarkup(
     [
-        ["🌤 Погода", "💰 Валюты"],
+        ["🌤 Погода"],
+        ["🛠 Инструменты"],
         ["📦 Посылки"],
         ["⚙ Настройки", "ℹ️ О боте"],
     ],

@@ -6,8 +6,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     bot_token: str = ""
     admin_id: Optional[int] = None
+
     timezone: str = "Europe/Moscow"
+
     weather_provider: str = "openweather"
+
+    translate_provider: str = "argos"
 
     model_config = SettingsConfigDict(
         env_file=".env",
